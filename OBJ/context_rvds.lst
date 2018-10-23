@@ -339,12 +339,11 @@ ARM Macro Assembler    Page 6
               E000ED20 
               E000ED08 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
-erwork --depend=..\obj\context_rvds.d -o..\obj\context_rvds.o -IE:\滑翔机文档与
-资料\glider_code\driver_glider\USER\RTE -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DF
-P\2.13.0 -IC:\Keil_v5\ARM\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DF
-P\2.13.0\Device\Include --predefine="__UVISION_VERSION SETA 514" --predefine="S
-TM32F407xx SETA 1" --list=..\obj\context_rvds.lst ..\RT-Thread\src\context_rvds
-.S
+erwork --depend=..\obj\context_rvds.d -o..\obj\context_rvds.o -IE:\Git_robfish\
+driver_glider\USER\RTE -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0 -IC:\Kei
+l_v5\ARM\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.13.0\Device\I
+nclude --predefine="__UVISION_VERSION SETA 514" --predefine="STM32F407xx SETA 1
+" --list=..\obj\context_rvds.lst ..\RT-Thread\src\context_rvds.S
 
 
 

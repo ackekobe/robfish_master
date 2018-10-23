@@ -196,19 +196,19 @@ u8 Master_Slave_Comm(u8 CMD_ID)
 #ifdef  __DEBUG
 			rt_kprintf("\n\n\n\n\ntest start!\n");
 #endif
-			if(MS_Comm_WriteByte(ZTSB))
+			if(MS_Comm_WriteByte(ZTSB) == RT_FAULT)
 				return RT_ERROR;
-			if(Master_ReadByte())
+			if(Master_ReadByte()== RT_FAULT)
 				return RT_ERROR;
-			if(MS_Comm_WriteByte(0x00))
+			if(MS_Comm_WriteByte(0x00)== RT_FAULT)
 				return RT_ERROR;
-			if(Master_ReadByte())
+			if(Master_ReadByte()== RT_FAULT)
 				return RT_ERROR;									//接收字节
 			if(Master_Rev_Data(slave_stat_buf, slave_stat_bytes))
 				return RT_ERROR;									//从机状态字节数为 28
 			break;
 		case XTTZ:												//从机电机停止运行
-			if(MS_Comm_WriteByte(XTTZ))
+			if(MS_Comm_WriteByte(XTTZ)== RT_FAULT)
 				return RT_ERROR;
 			break;
 		case XTJS:
@@ -217,15 +217,15 @@ u8 Master_Slave_Comm(u8 CMD_ID)
 				return RT_ERROR;
 			break;
 		case XTFW:												//系统复位
-			if(MS_Comm_WriteByte(XTFW))
+			if(MS_Comm_WriteByte(XTFW)== RT_FAULT)
 				return RT_ERROR;
 			break;
 		case YTHL:
-			if(MS_Comm_WriteByte(YTHL))							//鱼体回零
+			if(MS_Comm_WriteByte(YTHL)== RT_FAULT)							//鱼体回零
 				return RT_ERROR;
 			break;
 		case YTZP:
-			if(MS_Comm_WriteByte(YTZP))							//鱼体回零
+			if(MS_Comm_WriteByte(YTZP)== RT_FAULT)							//鱼体回零
 				return RT_ERROR;
 			break;
 		case YTSF:												//鱼体运行姿态

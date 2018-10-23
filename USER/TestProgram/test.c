@@ -352,16 +352,20 @@ void USB_test()
 修改记录：
 
 **************************************************/
-void Test_SPI_Comm_Master()
+u8 Test_SPI_Comm_Master()
 {
 	static u8 cnt = 0;
-	u8 Master_Temp = 0;
+	s16 Master_Temp = 0;
 	
 	for(cnt = 0; cnt < 10; ++cnt)
 	{
-		MS_Comm_WriteByte(0x00);			//发一个字节
+		if(MS_Comm_WriteByte(0x00) == RT_FAULT)
+			return RT_ERROR;			//发一个字节
 		Master_Temp = Master_ReadByte();
-		rt_kprintf("%d\n", Master_Temp);
+		if(Master_ReadByte() == RT_FAULT)
+			return RT_ERROR;
+		else
+			rt_kprintf("%d\n", Master_Temp);
 		delay_ms(500);	
 	}
 }
@@ -485,7 +489,7 @@ void motor_Test()
 **************************************************/
 void Master_Slave_Test()
 {
-#ifdef __DEBUG
+#ifndef __DEBUG
 	if(fish_param_flag == 1)
 	{
 		fish_param[0] = 0x36;

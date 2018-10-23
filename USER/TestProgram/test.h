@@ -34,7 +34,7 @@ void Test_AHRS_USART1(void);
 void Test_altimeter_USART2(void);
 void RTC_test(void);
 void SD_test(void);
-void Test_SPI_Comm_Master(void);
+u8 Test_SPI_Comm_Master(void);
 void Master_Slave_Test(void);
 void Upper_Master_Test(void);
 void Test_CTD48M_USART3(void);

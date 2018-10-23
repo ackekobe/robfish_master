@@ -31,6 +31,7 @@
 "..\obj\stm32f4xx_exti.o"
 "..\obj\stm32f4xx_rtc.o"
 "..\obj\stm32f4xx_pwr.o"
+"..\obj\stm32f4xx_can.o"
 "..\obj\usb_core.o"
 "..\obj\usb_hcd.o"
 "..\obj\usb_hcd_int.o"

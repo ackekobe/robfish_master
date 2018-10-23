@@ -43,6 +43,11 @@ void MS_Comm_Init(void)
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;							//上拉
 	GPIO_Init(GPIOA, &GPIO_InitStructure);									//初始化
 	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	
 	
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource5,GPIO_AF_SPI1); 					//PB5复用为 SPI1
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource6,GPIO_AF_SPI1); 					//PB6复用为 SPI1
@@ -61,9 +66,11 @@ void MS_Comm_Init(void)
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;						//指定数据传输从MSB位还是LSB位开始:数据传输从MSB位开始
 	SPI_InitStructure.SPI_CRCPolynomial = 7;								//CRC值计算的多项式
 	SPI_Init(SPI1, &SPI_InitStructure);  									//根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
-
+	SPI_SSOutputCmd(SPI1, ENABLE);
 	
 	SPI_Cmd(SPI1, ENABLE); 													//使能SPI外设
+	
+	NSS_CS = 1;
 	
 }
 
@@ -99,13 +106,13 @@ void MS_Comm_SetSpeed(u8 SPI_BaudRatePrescaler)
 修改记录：
 
 **************************************************/
-u8 MS_Comm_WriteByte(u8 TxData)
+s16 MS_Comm_WriteByte(u8 TxData)
 {	
 	u8 retry = 0;
 	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)			//等待发送区空 	
 	{
 		if(++retry > 200)
-			return RT_ERROR;
+			return RT_FAULT;
 	}		
 	SPI_I2S_SendData(SPI1, TxData); 										//通过外设SPI1发送一个byte数据	
 	return RT_EOK;
@@ -122,13 +129,13 @@ u8 MS_Comm_WriteByte(u8 TxData)
 修改记录：
 
 **************************************************/
-u8 Master_ReadByte(void)
+s16 Master_ReadByte(void)
 {  
 	u8 retry = 0;
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)		//等待接收完一个byte			
 	{
 		if(++retry > 200)
-			return RT_ERROR;
+			return RT_FAULT;
 	}	
 	return SPI_I2S_ReceiveData(SPI1); 										//返回通过SPI1最近接收的数据      
 }
@@ -148,16 +155,25 @@ u8 Master_ReadByte(void)
 u8 Master_Send_Data(u8* dat, u8 len)
 {
 	u8 cnt = 0;
+	NSS_CS = 0;
 	for(cnt = 0; cnt < len; ++cnt)
 	{
-		if(MS_Comm_WriteByte(*(dat+cnt)))
+
+		if(MS_Comm_WriteByte(*(dat+cnt)) == RT_FAULT)
+		{
+			NSS_CS = 1;
 			return RT_ERROR;
+		}
 #ifdef __DEBUG
 //		rt_kprintf("%d\n", dat[cnt]);
 #endif
-		if(Master_ReadByte())
+		if(Master_ReadByte() == RT_FAULT)
+		{
+			NSS_CS = 1;
 			return RT_ERROR;
+		}
 	}
+	NSS_CS = 1;
 	return RT_EOK;
 }
 
@@ -176,14 +192,28 @@ u8 Master_Send_Data(u8* dat, u8 len)
 u8 Master_Rev_Data(u8* rev_buf, u8 len)
 {
 	u8 cnt = 0;
+	s16 temp_val = 0;
+	NSS_CS = 0;
 	for(cnt = 0; cnt < len; ++cnt)
 	{
-		MS_Comm_WriteByte(0x00);
-		rev_buf[cnt] = Master_ReadByte();
+		if(MS_Comm_WriteByte(0x00) == RT_FAULT)
+		{
+			NSS_CS = 1;
+			return RT_ERROR;
+		}
+		temp_val = Master_ReadByte();
+		if(temp_val == RT_FAULT)
+		{
+			NSS_CS = 1;
+			return RT_ERROR;
+		}
+		rev_buf[cnt] = temp_val;
+		
 #ifdef  __DEBUG
 		rt_kprintf("%d\n",rev_buf[cnt]);
 #endif
 	}
+	NSS_CS = 1;
 	return RT_EOK;
 }
 

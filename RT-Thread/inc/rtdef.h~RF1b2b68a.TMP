@@ -250,7 +250,6 @@ typedef int (*init_fn_t)(void);
 /*@{*/
 
 /* RT-Thread error code definitions */
-#define RT_FAULT						-1
 #define RT_EOK                          0               /**< There is no error */
 #define RT_ERROR                        1               /**< A generic error happens */
 #define RT_ETIMEOUT                     2               /**< Timed out */

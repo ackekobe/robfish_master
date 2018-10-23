@@ -6,7 +6,7 @@
 #include "rtthread.h"
 #include "delay.h"
 
-//#define  SPI_Master_CS			(PAout(4))
+#define  NSS_CS					(PAout(4))
 #define  CMD_Timing				(0x01)
 #define  CMD_Motor_Running		(0x02)
 #define  CMD_Slave_Stat			(0x03)
@@ -23,8 +23,8 @@ extern u8 slave_send_flag;
 
 void MS_Comm_Init(void);
 void MS_Comm_SetSpeed(u8 SPI_BaudRatePrescaler);
-u8 MS_Comm_WriteByte(u8 TxData);
-u8 Master_ReadByte(void);
+s16 MS_Comm_WriteByte(u8 TxData);
+s16 Master_ReadByte(void);
 u8 Master_Send_Data(u8* dat, u8 len);
 u8 Master_Rev_Data(u8* rev_buf, u8 len);
 

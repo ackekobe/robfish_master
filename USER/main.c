@@ -97,7 +97,7 @@ while(1)
 {
 	u8 res = 0;
 	u16 cnt = 0;
-	RF_test();
+//	RF_test();
 //	Test_Sonar_USART6();
 //	AHRS_calc_CRC();
 //	for(cnt = 0; cnt < sizeof(buf); ++cnt)
@@ -109,7 +109,8 @@ while(1)
 //	cnt = sizeof(long long);
 //	WDG_Feed();
 //	Test_altimeter_USART2();
-	delay_ms(1000);
+	delay_ms(3000);
+	Master_Slave_Test();
 //	Test_SPI_Comm_Master();
 //	Upper_Master_Test();
 	
@@ -191,11 +192,11 @@ int main(void)
 //	}
 	MS_Comm_Init();
 //	WDG_Init();
-	MY_RTC_Init();
-	WK2124_Init();
+//	MY_RTC_Init();
+//	WK2124_Init();
 //	BD_RNSS_Init();
 //	RNSS_start();
-	RF_Init();
+//	RF_Init();
 //	Sonar_Init(115200);
 
 	
@@ -226,7 +227,7 @@ rt_hw_interrupt_enable(level);
                    sizeof(rt_led0_thread_stack),  	//线程栈大小
                    5,    //线程的优先级
                    20);                         	//线程时间片
-//    rt_thread_startup(&led0_thread);             	//启动线程led0_thread  
+    rt_thread_startup(&led0_thread);             	//启动线程led0_thread  
 				   
 	rt_thread_init(&led1_thread,                 	//线程控制块
                    "led1",                      	//线程名字，在shell里面可以看到
