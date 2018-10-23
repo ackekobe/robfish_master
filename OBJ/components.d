@@ -1,0 +1,10 @@
+..\obj\components.o: ..\RT-Thread\src\components.c
+..\obj\components.o: ..\RT-Thread\inc\rthw.h
+..\obj\components.o: ..\RT-Thread\inc\rtthread.h
+..\obj\components.o: ..\RT-Thread\inc\rtconfig.h
+..\obj\components.o: ..\RT-Thread\inc\rtdebug.h
+..\obj\components.o: ..\RT-Thread\inc\rtdef.h
+..\obj\components.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\components.o: ..\RT-Thread\inc\rtservice.h
+..\obj\components.o: ..\RT-Thread\inc\rtm.h
+..\obj\components.o: ..\RT-Thread\inc\rtthread.h

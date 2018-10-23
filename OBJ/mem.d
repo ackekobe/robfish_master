@@ -1,0 +1,10 @@
+..\obj\mem.o: ..\RT-Thread\src\mem.c
+..\obj\mem.o: ..\RT-Thread\inc\rthw.h
+..\obj\mem.o: ..\RT-Thread\inc\rtthread.h
+..\obj\mem.o: ..\RT-Thread\inc\rtconfig.h
+..\obj\mem.o: ..\RT-Thread\inc\rtdebug.h
+..\obj\mem.o: ..\RT-Thread\inc\rtdef.h
+..\obj\mem.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\mem.o: ..\RT-Thread\inc\rtservice.h
+..\obj\mem.o: ..\RT-Thread\inc\rtm.h
+..\obj\mem.o: ..\RT-Thread\inc\rtthread.h
