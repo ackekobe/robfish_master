@@ -36,19 +36,19 @@ void MS_Comm_Init(void)
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);					//使能GPIOF时钟
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);					//使能SPI1时钟
 	
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;			//PB5~7复用功能输出	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;			//PB5~7复用功能输出	
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							//推挽输出
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;						//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;							//上拉
 	GPIO_Init(GPIOA, &GPIO_InitStructure);									//初始化
 	
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
+//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_Init(GPIOA, &GPIO_InitStructure);
 	
 	
-	
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource4,GPIO_AF_SPI1);
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource5,GPIO_AF_SPI1); 					//PB5复用为 SPI1
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource6,GPIO_AF_SPI1); 					//PB6复用为 SPI1
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource7,GPIO_AF_SPI1); 					//PB7复用为 SPI1
@@ -66,12 +66,54 @@ void MS_Comm_Init(void)
 	SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;						//指定数据传输从MSB位还是LSB位开始:数据传输从MSB位开始
 	SPI_InitStructure.SPI_CRCPolynomial = 7;								//CRC值计算的多项式
 	SPI_Init(SPI1, &SPI_InitStructure);  									//根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
-	SPI_SSOutputCmd(SPI1, ENABLE);
+
 	
 	SPI_Cmd(SPI1, ENABLE); 													//使能SPI外设
 	
-	NSS_CS = 1;
+
 	
+}
+
+/**************************************************
+
+函数名：MS_Comm_TIMode_Init
+作  者：刘晓东
+日  期：2018.7.19
+版  本：V1.00
+说  明：初始化SPI1接口
+修改记录：
+
+**************************************************/
+
+void MS_Comm_TIMode_Init(void)
+{
+	GPIO_InitTypeDef	GPIO_InitStructure;
+	
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);					//使能GPIOA时钟
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);					//使能GPIOF时钟
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);					//使能SPI1时钟
+	
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;			//PB5~7复用功能输出	
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;							//复用功能
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;							//推挽输出
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;						//100MHz
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;							//上拉
+	GPIO_Init(GPIOA, &GPIO_InitStructure);									//初始化
+	
+	
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource4,GPIO_AF_SPI1);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource5,GPIO_AF_SPI1); 					//PB5复用为 SPI1
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource6,GPIO_AF_SPI1); 					//PB6复用为 SPI1
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource7,GPIO_AF_SPI1); 					//PB7复用为 SPI1
+	
+	RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1,ENABLE);						//复位SPI1
+	RCC_APB2PeriphResetCmd(RCC_APB2Periph_SPI1,DISABLE);					//停止复位SPI1
+	
+	
+	SPI1->CR1 |= SPI_BaudRatePrescaler_256;
+	SPI1->CR1 |= SPI_DataSize_8b;
+	SPI_TIModeCmd(SPI1, ENABLE);
+	SPI1->CR1 |= 0x0044;	
 }
 
 /**************************************************
@@ -155,13 +197,14 @@ s16 Master_ReadByte(void)
 u8 Master_Send_Data(u8* dat, u8 len)
 {
 	u8 cnt = 0;
-	NSS_CS = 0;
+//	NSS_CS = 1;
+	delay_us(5);
 	for(cnt = 0; cnt < len; ++cnt)
 	{
-
+//		NSS_CS = 0;
 		if(MS_Comm_WriteByte(*(dat+cnt)) == RT_FAULT)
 		{
-			NSS_CS = 1;
+//			NSS_CS = 0;
 			return RT_ERROR;
 		}
 #ifdef __DEBUG
@@ -169,11 +212,13 @@ u8 Master_Send_Data(u8* dat, u8 len)
 #endif
 		if(Master_ReadByte() == RT_FAULT)
 		{
-			NSS_CS = 1;
+//			NSS_CS = 0;
 			return RT_ERROR;
 		}
+//		NSS_CS = 1;
+		delay_us(5);
 	}
-	NSS_CS = 1;
+//	NSS_CS = 1;
 	return RT_EOK;
 }
 
@@ -193,18 +238,18 @@ u8 Master_Rev_Data(u8* rev_buf, u8 len)
 {
 	u8 cnt = 0;
 	s16 temp_val = 0;
-	NSS_CS = 0;
+//	NSS_CS = 0;
 	for(cnt = 0; cnt < len; ++cnt)
 	{
 		if(MS_Comm_WriteByte(0x00) == RT_FAULT)
 		{
-			NSS_CS = 1;
+//			NSS_CS = 1;
 			return RT_ERROR;
 		}
 		temp_val = Master_ReadByte();
 		if(temp_val == RT_FAULT)
 		{
-			NSS_CS = 1;
+//			NSS_CS = 1;
 			return RT_ERROR;
 		}
 		rev_buf[cnt] = temp_val;
@@ -213,7 +258,7 @@ u8 Master_Rev_Data(u8* rev_buf, u8 len)
 		rt_kprintf("%d\n",rev_buf[cnt]);
 #endif
 	}
-	NSS_CS = 1;
+//	NSS_CS = 1;
 	return RT_EOK;
 }
 

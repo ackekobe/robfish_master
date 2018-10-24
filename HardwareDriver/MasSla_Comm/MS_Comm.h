@@ -22,6 +22,7 @@ typedef enum
 extern u8 slave_send_flag;
 
 void MS_Comm_Init(void);
+void MS_Comm_TIMode_Init(void);
 void MS_Comm_SetSpeed(u8 SPI_BaudRatePrescaler);
 s16 MS_Comm_WriteByte(u8 TxData);
 s16 Master_ReadByte(void);

@@ -190,7 +190,7 @@ int main(void)
 //			break;
 //		LED2 = 0;
 //	}
-	MS_Comm_Init();
+	MS_Comm_TIMode_Init();
 //	WDG_Init();
 //	MY_RTC_Init();
 //	WK2124_Init();
